@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Dogfood the detector on the fixture project
+        run: |
+          python env_example_drift_detector.py fixtures/sample-project || \
+            echo "exit=$? (expected 1: fixture ships with 2 MISSING vars)"
